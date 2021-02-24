@@ -43,13 +43,14 @@ class QAViewSet(viewsets.ModelViewSet):
         queryset = QA.objects.all()
         if self.action == 'list':
             username = self.request.query_params.get('username', None)
-            tag = self.request.query_params.get('tag', None)
+            tag = self.request.query_params.get('tags', None)
 
             if username is not None:
                 userID = User.objects.get(username=username)
                 queryset = queryset.filter(user=userID)
             elif tag is not None:
-                queryset = queryset.filter(tags__name__in=[tag])
+                tags_list = tag.split(',')
+                queryset = queryset.filter(tags__name__in=tags_list).distinct()
 
         #elif self.action == 'detail':
 #            total_views = r.incr(f'image:{image.id}:views')
